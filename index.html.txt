@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitControl - Gestão de Academia</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        .form-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        input, select, button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        input, select { flex: 1; min-width: 150px; }
+        button { background-color: #27ae60; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #219150; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+        .btn-excluir { background-color: #e74c3c; padding: 6px 10px; font-size: 12px; }
+        .btn-excluir:hover { background-color: #c0392b; }
+        .status-ativo { color: #27ae60; font-weight: bold; }
+        .status-pendente { color: #e67e22; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏋️ FitControl - Cadastro de Alunos</h1>
+    
+    <div class="form-group">
+        <input type="text" id="nome" placeholder="Nome completo do aluno">
+        <select id="plano">
+            <option value="Mensal - R$ 90">Plano Mensal (R$ 90)</option>
+            <option value="Trimestral - R$ 240">Plano Trimestral (R$ 240)</option>
+            <option value="Anual - R$ 800">Plano Anual (R$ 800)</option>
+        </select>
+        <select id="status">
+            <option value="Ativo">Pagamento: Ativo</option>
+            <option value="Pendente">Pagamento: Pendente</option>
+        </select>
+        <button onclick="adicionarAluno()">Cadastrar Aluno</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome do Aluno</th>
+                <th>Plano Escolhido</th>
+                <th>Status Financeiro</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody id="listaAlunos"></tbody>
+    </table>
+</div>
+
+<script>
+    let alunos = JSON.parse(localStorage.getItem('alunosAcademia')) || [];
+
+    function renderizarTabela() {
+        const tbody = document.getElementById('listaAlunos');
+        tbody.innerHTML = '';
+
+        alunos.forEach((aluno, index) => {
+            const classeStatus = aluno.status === 'Ativo' ? 'status-ativo' : 'status-pendente';
+            tbody.innerHTML += `
+                <tr>
+                    <td>${aluno.nome}</td>
+                    <td>${aluno.plano}</td>
+                    <td class="${classeStatus}">${aluno.status}</td>
+                    <td><button class="btn-excluir" onclick="removerAluno(${index})">Excluir</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function adicionarAluno() {
+        const nome = document.getElementById('nome').value.trim();
+        const plano = document.getElementById('plano').value;
+        const status = document.getElementById('status').value;
+
+        if (!nome) {
+            alert('Por favor, digite o nome do aluno!');
+            return;
+        }
+
+        alunos.push({ nome, plano, status });
+        localStorage.setItem('alunosAcademia', JSON.stringify(alunos));
+        document.getElementById('nome').value = '';
+        renderizarTabela();
+    }
+
+    function removerAluno(index) {
+        alunos.splice(index, 1);
+        localStorage.setItem('alunosAcademia', JSON.stringify(alunos));
+        renderizarTabela();
+    }
+
+    renderizarTabela();
+</script>
+
+</body>
+</html>
